@@ -1,4 +1,5 @@
 [![.NET](https://github.com/4r13lx/OMS/actions/workflows/dotnet.yml/badge.svg)](https://github.com/4r13lx/OMS/actions/workflows/dotnet.yml)
+[![TEST](https://github.com/4r13lx/OMS/actions/workflows/tests.yml/badge.svg)](https://github.com/4r13lx/OMS/actions/workflows/tests.yml)
 
 # OMS Investment Orders API
 
