@@ -1,3 +1,5 @@
+[![.NET](https://github.com/4r13lx/OMS/actions/workflows/dotnet.yml/badge.svg)](https://github.com/4r13lx/OMS/actions/workflows/dotnet.yml)
+
 # OMS Investment Orders API
 
 Solución para el desafío Backend Engineer Senior de PPI: gestión de órdenes de inversión con arquitectura en capas, integración con un mock de precios externos y reglas de negocio por tipo de activo.
