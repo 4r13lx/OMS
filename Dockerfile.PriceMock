@@ -1,0 +1,29 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and project files
+COPY ["OMS.sln", "."]
+COPY ["Oms.Apis/Oms.PriceMock.Api/Oms.PriceMock.Api.csproj", "Oms.Apis/Oms.PriceMock.Api/"]
+COPY ["Oms.PriceMock.Application/Oms.PriceMock.Application.csproj", "Oms.PriceMock.Application/"]
+
+# Restore dependencies
+RUN dotnet restore Oms.Apis/Oms.PriceMock.Api/Oms.PriceMock.Api.csproj
+
+# Copy source code
+COPY . .
+
+# Build and publish
+RUN dotnet publish "Oms.Apis/Oms.PriceMock.Api/Oms.PriceMock.Api.csproj" -c Release -o /app/publish
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+EXPOSE 5001
+
+ENV ASPNETCORE_URLS=http://+:5001
+
+ENTRYPOINT ["dotnet", "Oms.PriceMock.Api.dll"]

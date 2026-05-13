@@ -1,0 +1,32 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and project files
+COPY ["OMS.sln", "."]
+COPY ["Oms.Apis/Oms.Api/Oms.Api.csproj", "Oms.Apis/Oms.Api/"]
+COPY ["Oms.Application/Oms.Application.csproj", "Oms.Application/"]
+COPY ["Oms.Core/Oms.Core.csproj", "Oms.Core/"]
+COPY ["Oms.Data/Oms.Data.csproj", "Oms.Data/"]
+COPY ["Oms.Infrastructure/Oms.Infrastructure.csproj", "Oms.Infrastructure/"]
+
+# Restore dependencies
+RUN dotnet restore Oms.Apis/Oms.Api/Oms.Api.csproj
+
+# Copy source code
+COPY . .
+
+# Build and publish
+RUN dotnet publish "Oms.Apis/Oms.Api/Oms.Api.csproj" -c Release -o /app/publish
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+EXPOSE 5000
+
+ENV ASPNETCORE_URLS=http://+:5000
+
+ENTRYPOINT ["dotnet", "Oms.Api.dll"]

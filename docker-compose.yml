@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  price-mock-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.PriceMock
+    container_name: oms-price-mock-api
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ASPNETCORE_URLS=${OMS_PRICE_MOCK_API_BASE_URL}:${OMS_PRICE_MOCK_API_PORT}
+    networks:
+      - oms-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${OMS_PRICE_MOCK_API_BASE_URL}:${OMS_PRICE_MOCK_API_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  oms-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.Api
+    container_name: oms-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - ASPNETCORE_URLS=${OMS_API_BASE_URL}:${OMS_API_PORT}
+      - PriceMockApi__BaseUrl=${OMS_EXTERNAL_PRICE_MOCK_ENDPOINT}
+      - ConnectionStrings__OmsDb=${OMS_API_CONNECTION_STRING}
+    volumes:
+      - oms-data:/app/data
+    networks:
+      - oms-network
+
+    # Generar una dependencia explícita para asegurar que el API se inicie después del mock de precios
+    # pero no es necesaria, ya que el API manejará la falta de disponibilidad del mock de precios con reintentos y circuit breakers.
+    #depends_on:
+    #  - price-mock-api
+    
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${OMS_API_BASE_URL}:${OMS_API_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  oms-network:
+    driver: bridge
+
+volumes:
+  oms-data:
