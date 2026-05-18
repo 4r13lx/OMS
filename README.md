@@ -3,7 +3,7 @@
 
 # OMS Investment Orders API
 
-Solución para el desafío Backend Engineer Senior de PPI: gestión de órdenes de inversión con arquitectura en capas, integración con un mock de precios externos y reglas de negocio por tipo de activo.
+Desarrollo académico de una API backend para administración de órdenes de inversión, aplicando principios de arquitectura limpia e integración con proveedores externos de precios. Gestión de órdenes de inversión con arquitectura en capas, integración con un mock de precios externos y reglas de negocio por tipo de activo.
 
 ## Proyectos
 
